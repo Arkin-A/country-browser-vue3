@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {computed, onMounted} from 'vue'
+import {computed, onMounted, nextTick, ref, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {useCountriesStore} from '@/stores/countries'
 
@@ -17,6 +17,15 @@ const country = computed(() =>
     store.all.find(c => (c.cca3 ?? c.cca2 ?? '').toUpperCase() === code.value)
 )
 
+const headingRef = ref<HTMLElement | null>(null)
+
+watch(country, async (val) => {
+  if (val) {
+    await nextTick()
+    headingRef.value?.focus()
+  }
+})
+
 function goBack() {
   router.push({name: 'home'})
 }
@@ -26,8 +35,8 @@ function goBack() {
 <template>
   <section class="w-full max-w-3xl mx-auto p-4">
 
-    <div v-if="store.isLoading" class="text-slate-500">Loading…</div>
-    <div v-else-if="store.error" class="text-red-600">Error: {{ store.error }}</div>
+    <div v-if="store.isLoading" role="status" aria-live="polite" class="text-slate-500">Loading…</div>
+    <div v-else-if="store.error" role="alert" aria-live="assertive" class="text-red-600">Error: {{ store.error }}</div>
     <div v-else-if="!country" class="text-slate-500">No country found.</div>
 
     <article
@@ -42,7 +51,7 @@ function goBack() {
       />
 
       <div>
-        <h1 class="text-2xl font-semibold">{{ country.name.common }}</h1>
+        <h1 ref="headingRef" tabindex="-1" class="text-2xl font-semibold">{{ country.name.common }}</h1>
         <p class="text-slate-600">{{ country.name.official }}</p>
 
         <dl class="mt-4 grid grid-cols-[120px_1fr] gap-y-2">

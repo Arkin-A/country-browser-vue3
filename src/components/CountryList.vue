@@ -19,30 +19,37 @@ const q = computed({
 
 <template>
   <section class="container p-4">
+    <!-- Page heading for screen readers -->
+    <h1 class="sr-only">Browse countries</h1>
+
     <!-- Header & search field -->
     <header class="app-header top-14 px-4 pt-2 pb-4 mb-6">
       <div class="max-w-2xl mx-auto">
         <input
             v-model="q"
             aria-label="Country search"
+            :aria-describedby="'result-count'"
+            :aria-controls="'country-list'"
             class="input"
             placeholder="Search (e.g. Germany, Berlin, Europe)…"
             type="search"
         />
-        <p class="mt-2 text-xs text-slate-500 text-center">
+        <p id="result-count" aria-live="polite" role="status" class="mt-2 text-xs text-slate-500 text-center">
           {{ store.total }} countries found
         </p>
       </div>
     </header>
 
     <!-- Status messages -->
-    <div v-if="store.isLoading" class="text-slate-500">Loading data…</div>
-    <div v-else-if="store.error" class="text-red-600">Error: {{ store.error }}</div>
+    <div v-if="store.isLoading" role="status" aria-live="polite" class="text-slate-500">Loading data…</div>
+    <div v-else-if="store.error" role="alert" aria-live="assertive" class="text-red-600">Error: {{ store.error }}</div>
 
     <!-- Country list -->
     <ul
         v-else
+        id="country-list"
         aria-label="Country list"
+        :aria-busy="store.isLoading ? 'true' : 'false'"
         class="grid gap-4 sm:grid-cols-2 md:grid-cols-3"
         role="list"
     >
