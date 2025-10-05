@@ -13,7 +13,6 @@ export const useCountriesStore = defineStore('countries', () => {
     const query = ref('')
     const page = ref(1)
     const pageSize = ref(15)
-    const selected = ref<Country | null>(null)
 
     // --- Actions ---
 
@@ -33,10 +32,6 @@ export const useCountriesStore = defineStore('countries', () => {
     function setQuery(q: string): void {
         query.value = q;
         page.value = 1
-    }
-
-    function select(c: Country | null): void {
-        selected.value = c
     }
 
     function nextPage(): void {
@@ -103,12 +98,10 @@ export const useCountriesStore = defineStore('countries', () => {
         query,
         page,
         pageSize,
-        selected,
 
         // Actions
         load,
         setQuery,
-        select,
         nextPage,
         prevPage,
 
