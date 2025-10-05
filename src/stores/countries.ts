@@ -61,7 +61,7 @@ export const useCountriesStore = defineStore('countries', () => {
      */
 
     function norm(s: string): string {
-        return s.normalize('NFKD').toLowerCase()
+        return s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
     }
 
     const normalizedQuery = computed(() => norm(query.value.trim()))
