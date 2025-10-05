@@ -18,22 +18,21 @@ const q = computed({
 </script>
 
 <template>
-  <section class="w-full mx-auto p-4">
+  <section class="container p-4">
     <!-- Header & search field -->
-    <header class="w-full text-center mb-8">
-      <h1 class="text-2xl font-semibold mb-4">Country Browser</h1>
-
-      <input
-          v-model="q"
-          aria-label="Country search"
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-300"
-          placeholder="Search (e.g. Germany, Berlin, Europe)…"
-          type="search"
-      />
-
-      <p class="mt-2 text-sm text-slate-500">
-        {{ store.total }} countries found
-      </p>
+    <header class="app-header top-14 px-4 pt-2 pb-4 mb-6">
+      <div class="max-w-2xl mx-auto">
+        <input
+            v-model="q"
+            aria-label="Country search"
+            class="input"
+            placeholder="Search (e.g. Germany, Berlin, Europe)…"
+            type="search"
+        />
+        <p class="mt-2 text-xs text-slate-500 text-center">
+          {{ store.total }} countries found
+        </p>
+      </div>
     </header>
 
     <!-- Status messages -->
@@ -44,31 +43,35 @@ const q = computed({
     <ul
         v-else
         aria-label="Country list"
-        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        class="grid gap-4 sm:grid-cols-2 md:grid-cols-3"
         role="list"
     >
       <li
           v-for="c in store.paged"
           :key="c.cca3 || c.name.common"
-          class="p-3 border rounded-md bg-white flex items-center gap-3 hover:shadow transition"
       >
-
-        <img
-            :alt="c.flags.alt || ('Flag of ' + c.name.common)"
-            :src="c.flags.svg || c.flags.png"
-            class="w-8 h-6"
-            height="24"
-            loading="lazy"
-            width="32"
-        />
-
-        <div class="text-left">
-          <div class="font-medium">{{ c.name.common }}</div>
-          <div class="text-xs text-slate-600">
-            {{ c.region || '—' }} / {{ c.capital?.[0] || '—' }}
+        <RouterLink
+            :aria-label="`Show details for ${c.name.common}`"
+            :to="{ name: 'country', params: { code: c.cca3 || c.cca2 } }"
+            class="group card-link"
+        >
+          <div class="flex items-center gap-4">
+            <img
+                :alt="c.flags.alt || ('Flag of ' + c.name.common)"
+                :src="c.flags.svg || c.flags.png"
+                class="w-12 h-8 object-cover rounded-sm shadow-sm"
+                height="32"
+                loading="lazy"
+                width="48"
+            />
+            <div class="min-w-0">
+              <div class="font-medium truncate group-hover:underline">{{ c.name.common }}</div>
+              <div class="text-xs text-slate-600 truncate">
+                {{ c.region || '—' }} / {{ c.capital?.[0] || '—' }}
+              </div>
+            </div>
           </div>
-        </div>
-
+        </RouterLink>
       </li>
     </ul>
 
@@ -79,16 +82,17 @@ const q = computed({
 
     <!-- Pagination -->
     <nav
+        v-if="store.totalPages > 1 && store.total > 0"
         aria-label="Pagination"
         class="mt-6 flex items-center justify-center gap-2"
         role="navigation"
     >
       <button
           :disabled="store.page === 1"
-          class="px-3 py-1 rounded border disabled:opacity-50"
+          class="btn"
           @click="store.prevPage"
       >
-        Prev
+        ← Prev
       </button>
 
       <span class="text-sm">
@@ -97,10 +101,10 @@ const q = computed({
 
       <button
           :disabled="store.page === store.totalPages"
-          class="px-3 py-1 rounded border disabled:opacity-50"
+          class="btn"
           @click="store.nextPage"
       >
-        Next
+        Next →
       </button>
     </nav>
   </section>
